@@ -1,0 +1,126 @@
+{
+  "restaurant": "Sample Takeaway",
+  "categories": [
+    {
+      "id": "pizzas",
+      "name": "Pizzas",
+      "items": [
+        {
+          "id": "margherita",
+          "name": "Margherita Pizza",
+          "price": 9.5,
+          "variants": ["small", "medium", "large"],
+          "addons": ["extra cheese", "olives", "mushrooms"]
+        },
+        {
+          "id": "pepperoni",
+          "name": "Pepperoni Pizza",
+          "price": 11.0,
+          "variants": ["small", "medium", "large"],
+          "addons": ["jalapenos", "extra cheese", "onions"]
+        },
+        {
+          "id": "veggie",
+          "name": "Garden Veggie Pizza",
+          "price": 10.5,
+          "variants": ["small", "medium", "large"],
+          "addons": ["extra cheese", "spinach", "olives"]
+        }
+      ]
+    },
+    {
+      "id": "burgers",
+      "name": "Burgers",
+      "items": [
+        {
+          "id": "classic_burger",
+          "name": "Classic Beef Burger",
+          "price": 8.5,
+          "variants": ["single", "double"],
+          "addons": ["bacon", "cheddar", "pickles"]
+        },
+        {
+          "id": "chicken_burger",
+          "name": "Crispy Chicken Burger",
+          "price": 8.0,
+          "variants": ["single", "double"],
+          "addons": ["spicy mayo", "cheddar", "lettuce"]
+        }
+      ]
+    },
+    {
+      "id": "sides",
+      "name": "Sides",
+      "items": [
+        {
+          "id": "fries",
+          "name": "Seasoned Fries",
+          "price": 3.5,
+          "variants": ["small", "large"],
+          "addons": ["cheese sauce", "chili flakes"]
+        },
+        {
+          "id": "garlic_bread",
+          "name": "Garlic Bread",
+          "price": 4.0,
+          "variants": ["regular", "cheesy"],
+          "addons": []
+        },
+        {
+          "id": "wings",
+          "name": "Buffalo Wings",
+          "price": 7.0,
+          "variants": ["6 pcs", "12 pcs"],
+          "addons": ["ranch", "blue cheese"]
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "items": [
+        {
+          "id": "cola",
+          "name": "Cola",
+          "price": 2.0,
+          "variants": ["can", "bottle"],
+          "addons": []
+        },
+        {
+          "id": "lemonade",
+          "name": "Sparkling Lemonade",
+          "price": 2.5,
+          "variants": ["can", "bottle"],
+          "addons": []
+        },
+        {
+          "id": "iced_tea",
+          "name": "Iced Tea",
+          "price": 2.5,
+          "variants": ["regular", "peach"],
+          "addons": []
+        }
+      ]
+    },
+    {
+      "id": "desserts",
+      "name": "Desserts",
+      "items": [
+        {
+          "id": "brownie",
+          "name": "Chocolate Brownie",
+          "price": 4.5,
+          "variants": ["single", "double"],
+          "addons": ["vanilla ice cream"]
+        },
+        {
+          "id": "cheesecake",
+          "name": "New York Cheesecake",
+          "price": 5.0,
+          "variants": ["slice", "whole"],
+          "addons": ["strawberry sauce"]
+        }
+      ]
+    }
+  ]
+}

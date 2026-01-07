@@ -13,8 +13,8 @@ class OrderItem(BaseModel):
     name: str
     quantity: int = Field(..., ge=1)
     size: Optional[str] = None
-    modifiers: List[str] = []
-    addons: List[str] = []
+    modifiers: List[str] = Field(default_factory=list)
+    addons: List[str] = Field(default_factory=list)
     special_instructions: Optional[str] = None
 
 
@@ -42,8 +42,8 @@ class OrderDraftItem(BaseModel):
     name: Optional[str] = None
     quantity: Optional[int] = None
     size: Optional[str] = None
-    modifiers: List[str] = []
-    addons: List[str] = []
+    modifiers: List[str] = Field(default_factory=list)
+    addons: List[str] = Field(default_factory=list)
     special_instructions: Optional[str] = None
 
 
@@ -52,11 +52,12 @@ class OrderDraft(BaseModel):
 
     customer_name: Optional[str] = None
     order_type: Optional[str] = None
-    items: List[OrderDraftItem] = []
+    items: List[OrderDraftItem] = Field(default_factory=list)
     subtotal: Optional[float] = None
     tax: Optional[float] = None
     total: Optional[float] = None
     special_instructions: Optional[str] = None
+    confidence_notes: Optional[str] = None
 
 
 class OrderResponse(BaseModel):

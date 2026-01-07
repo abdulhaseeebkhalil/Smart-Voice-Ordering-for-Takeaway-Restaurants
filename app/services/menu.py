@@ -81,7 +81,11 @@ def price_items(items: List[Dict[str, Any]], menu: Dict[str, Any]) -> Dict[str, 
         if not menu_item or menu_item.get("price") is None:
             continue
         priced_any = True
-        subtotal += float(menu_item.get("price", 0.0)) * int(quantity)
+        try:
+            qty = int(quantity)
+        except (TypeError, ValueError):
+            qty = 0
+        subtotal += float(menu_item.get("price", 0.0)) * qty
 
     if not priced_any:
         return {"subtotal": None, "tax": None, "total": None}

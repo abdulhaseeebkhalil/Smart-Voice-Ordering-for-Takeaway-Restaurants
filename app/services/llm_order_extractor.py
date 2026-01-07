@@ -30,22 +30,31 @@ def extract_or_question(
 ) -> ExtractionResult:
     current_order_state = current_order_state or {}
 
-    try:
-        response_text = _call_llm(transcript, menu, current_order_state)
-    except Exception as exc:
-        logger.error("LLM call failed: %s", exc)
+    response_text = ""
+    last_error: Optional[Exception] = None
+    for _ in range(max(settings.llm_max_retries, 1)):
+        try:
+            response_text = _call_llm(transcript, menu, current_order_state)
+            break
+        except Exception as exc:
+            last_error = exc
+            logger.error("LLM call failed: %s", exc)
+
+    if not response_text and last_error:
         return ExtractionResult(
             order=current_order_state,
             missing_fields=["items"],
             question="Sorry, I had trouble understanding. Could you repeat your order?",
             raw_response="",
-            error=str(exc),
+            error=str(last_error),
         )
 
     parsed = parse_llm_response(response_text)
     order_data = parsed.get("order") or {}
     missing_fields = parsed.get("missing_fields") or []
     question = parsed.get("question")
+    if not isinstance(missing_fields, list):
+        missing_fields = []
 
     merged_order = merge_order_state(current_order_state, order_data)
     validated_order, computed_missing, auto_question = validate_order_draft(merged_order, menu)
@@ -84,9 +93,20 @@ def _call_llm(transcript: str, menu: Dict[str, Any], current_order_state: Dict[s
         "If information is missing, list it in missing_fields and ask one concise follow-up question."
     )
 
+    allowed_keys = {
+        "customer_name",
+        "order_type",
+        "items",
+        "special_instructions",
+        "subtotal",
+        "tax",
+        "total",
+    }
+    sanitized_state = {key: value for key, value in current_order_state.items() if key in allowed_keys}
+
     user_prompt = (
         f"Menu:\n{menu_prompt(menu)}\n\n"
-        f"Existing order state (JSON): {json.dumps(current_order_state)}\n"
+        f"Existing order state (JSON): {json.dumps(sanitized_state)}\n"
         f"Caller said: {transcript}\n"
         "Return JSON only."
     )
@@ -99,18 +119,23 @@ def _call_llm(transcript: str, menu: Dict[str, Any], current_order_state: Dict[s
             {"role": "user", "content": user_prompt},
         ],
         temperature=0.2,
+        timeout=settings.llm_timeout_seconds,
     )
 
     return response.choices[0].message.content or ""
 
 
 def parse_llm_response(text: str) -> Dict[str, Any]:
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`")
+        cleaned = cleaned.replace("json", "", 1).strip()
     try:
-        return json.loads(text)
+        return json.loads(cleaned)
     except json.JSONDecodeError:
         pass
 
-    match = re.search(r"\{.*\}", text, re.DOTALL)
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(0))
@@ -138,6 +163,9 @@ def validate_order_draft(
     order = OrderDraft(**order_data)
     missing: List[str] = []
     question: Optional[str] = None
+
+    if not order.order_type:
+        order.order_type = "takeaway"
 
     if not order.items:
         missing.append("items")

@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - .env
+    environment:
+      - SQLITE_PATH=sqlite:////data/orders.db
+    volumes:
+      - .:/app
+      - ./data:/data
+    ports:
+      - "8000:8000"

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Dashboard</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap");
+
+    :root {
+      --bg: #f7f3ee;
+      --card: #ffffff;
+      --ink: #1f1f1f;
+      --muted: #6f6a63;
+      --accent: #f05a28;
+      --accent-dark: #c4451e;
+      --border: #e6ded5;
+      --success: #2f9e44;
+      --warning: #f08c00;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top left, #fff4e6, transparent 55%),
+        radial-gradient(circle at 80% 20%, #fde1d4, transparent 45%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 28px 32px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(240, 90, 40, 0.12);
+      color: var(--accent-dark);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.3fr);
+      gap: 24px;
+      padding: 0 32px 32px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(31, 31, 31, 0.06);
+      min-height: 400px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .auth {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    input[type="password"] {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      min-width: 200px;
+      font-family: "Source Code Pro", monospace;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(240, 90, 40, 0.3);
+    }
+
+    .orders {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      transition: border 0.2s ease, background 0.2s ease;
+    }
+
+    .order-card:hover {
+      border-color: var(--accent);
+      background: rgba(240, 90, 40, 0.06);
+    }
+
+    .order-card.selected {
+      border-color: var(--accent);
+      background: rgba(240, 90, 40, 0.12);
+    }
+
+    .order-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .status.received {
+      background: rgba(240, 140, 0, 0.15);
+      color: var(--warning);
+    }
+
+    .status.confirmed,
+    .status.printed {
+      background: rgba(47, 158, 68, 0.15);
+      color: var(--success);
+    }
+
+    .detail {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail h3 {
+      margin-bottom: 4px;
+    }
+
+    .detail code {
+      font-family: "Source Code Pro", monospace;
+      font-size: 12px;
+      background: #f8f5f1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .items {
+      border-top: 1px dashed var(--border);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #fdf7f2;
+      border: 1px solid #f1e7dc;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Takeaway Order Dashboard</h1>
+      <div class="subtitle">Track incoming AI-assisted orders in real time.</div>
+    </div>
+    <div class="pill">Live MVP</div>
+  </header>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Orders</h2>
+      <div class="auth">
+        <input id="password" type="password" placeholder="Dashboard password" />
+        <button id="load">Load Orders</button>
+      </div>
+      <div id="orders" class="orders"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Order Detail</h2>
+      <div id="detail" class="detail">
+        <div class="muted">Select an order to view details.</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ordersEl = document.getElementById("orders");
+    const detailEl = document.getElementById("detail");
+    const passwordInput = document.getElementById("password");
+    const loadButton = document.getElementById("load");
+
+    const storedToken = localStorage.getItem("dashboardToken");
+    if (storedToken) {
+      passwordInput.value = storedToken;
+    }
+
+    function setStatusTag(status) {
+      return `<span class="status ${status}">${status}</span>`;
+    }
+
+    function renderOrders(orders) {
+      ordersEl.innerHTML = "";
+      orders.forEach((order, index) => {
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+          <strong>${order.customer_name || "Guest"}</strong>
+          <div class="order-meta">
+            <span>${new Date(order.timestamp).toLocaleString()}</span>
+            <span>${order.caller_phone}</span>
+          </div>
+          ${setStatusTag(order.status)}
+        `;
+        card.addEventListener("click", () => {
+          document.querySelectorAll(".order-card").forEach((el) => el.classList.remove("selected"));
+          card.classList.add("selected");
+          renderDetail(order);
+        });
+        if (index === 0) {
+          card.classList.add("selected");
+          renderDetail(order);
+        }
+        ordersEl.appendChild(card);
+      });
+    }
+
+    function renderDetail(order) {
+      detailEl.innerHTML = `
+        <div>
+          <h3>${order.customer_name || "Guest"}</h3>
+          <div class="muted">${order.caller_phone}</div>
+          ${setStatusTag(order.status)}
+        </div>
+        <div>
+          <div class="muted">Order ID</div>
+          <code>${order.order_id}</code>
+        </div>
+        <div class="items">
+          ${order.items
+            .map(
+              (item) => `
+            <div class="item">
+              <strong>${item.quantity}x ${item.name}</strong> ${item.size ? `(${item.size})` : ""}
+              ${item.modifiers?.length ? `<div class="muted">Mods: ${item.modifiers.join(", ")}</div>` : ""}
+              ${item.addons?.length ? `<div class="muted">Add-ons: ${item.addons.join(", ")}</div>` : ""}
+              ${item.special_instructions ? `<div class="muted">Note: ${item.special_instructions}</div>` : ""}
+            </div>`
+            )
+            .join("")}
+        </div>
+        <div>
+          ${order.total ? `<div><strong>Total:</strong> $${order.total.toFixed(2)}</div>` : ""}
+        </div>
+        <button id="reprint">Reprint Ticket</button>
+      `;
+      document.getElementById("reprint").addEventListener("click", () => reprint(order.order_id));
+    }
+
+    async function loadOrders() {
+      const token = passwordInput.value.trim();
+      if (!token) {
+        alert("Enter dashboard password");
+        return;
+      }
+      localStorage.setItem("dashboardToken", token);
+      const response = await fetch("/api/orders", {
+        headers: { "X-Auth-Token": token },
+      });
+      if (!response.ok) {
+        alert("Failed to load orders");
+        return;
+      }
+      const orders = await response.json();
+      renderOrders(orders);
+    }
+
+    async function reprint(orderId) {
+      const token = passwordInput.value.trim();
+      if (!token) {
+        alert("Enter dashboard password");
+        return;
+      }
+      const response = await fetch(`/api/orders/${orderId}/reprint`, {
+        method: "POST",
+        headers: { "X-Auth-Token": token },
+      });
+      if (!response.ok) {
+        alert("Reprint failed");
+        return;
+      }
+      await loadOrders();
+    }
+
+    loadButton.addEventListener("click", loadOrders);
+  </script>
+</body>
+</html>
